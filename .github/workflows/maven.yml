@@ -81,4 +81,16 @@ jobs:
           helm install ${releaseName} ./chart --namespace ${releaseNamespace} --set global.imagePullSecret.name=${imeagePullSecret} --set global.domain=${domain}  --set srv.bindings.db.fromSecret=bookshop-db --set srv.image.repository=${srv_image} --set hana_deployer.image.repository=${hana_image} --set hana_deployer.bindings.hana.fromSecret=bookshop-db --set xsuaa.parameters.xsappname=bookshop-e2e-test --set srv.resources.limits.cpu=2000m --set srv.resources.limits.memory=2G --set srv.resources.requests.cpu=1000m --set srv.resources.requests.memory=2G
           kubectl rollout status deployment ${releaseName}-${deploymentName} --timeout=3m
           curl --max-time 10 --retry 5 --retry-delay 3 -f -LI -k https://${appPrefix}.${domain}
-          
+          xsuaaSecret=$(echo $(kubectl get secret ${releaseName}-${deploymentName}-${xsuaaKey} -o json))
+          clientID=$(jq '.data.clientid' <<< "$xsuaaSecret")
+          clientSecret=$(jq '.data.clientsecret' <<< "$xsuaaSecret")
+          url=$(jq '.data.url' <<< "$xsuaaSecret")
+          appPrefix=${releaseName}-${deploymentName}-${releaseNamespace}
+          appUrl=https://${appPrefix}.${domain}
+          accessToken=$(curl -d '{auth: {username: ${clientId},password: ${clientSecret}}}'  ${url}/oauth/token?grant_type=client_credentials&response_type=token)
+          status=$(curl -H "Content-Type: application/json" -H "Authorization: Bearer ${accessToken}" ${appUrl}/${endpoint})
+          `if [ $status == 200 ]
+          then
+            exit 0
+          else
+            exit 0`
