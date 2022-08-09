@@ -74,7 +74,7 @@ jobs:
           srv_image=${{secrets.IMAGEREGISTRY}}/e2e/bookshop-srv
           pack build ${hana_image} --path db --buildpack gcr.io/paketo-buildpacks/nodejs --builder paketobuildpacks/builder:base
           mvn package
-          pack build ${srv_image} --path srv/target/bookshop-exec.jar --buildpack gcr.io/paketo-buildpacks/sap-machine --buildpack gcr.io/paketo-buildpacks/java --builder paketobuildpacks/builder:base --env SPRING_PROFILES_ACTIVE=cloud
+          pack build ${srv_image} --path srv --buildpack gcr.io/paketo-buildpacks/sap-machine --buildpack gcr.io/paketo-buildpacks/java --builder paketobuildpacks/builder:base --env SPRING_PROFILES_ACTIVE=cloud
           cp ./chart/xs-security.json xs-security.json.tmp && jq '. |= . + {"authority":"$XSAPPNAME.admin"}' xs-security.json.tmp >./chart/xs-security.json && rm xs-security.json.tmp
           docker push ${hana_image}
           docker push ${srv_image}
