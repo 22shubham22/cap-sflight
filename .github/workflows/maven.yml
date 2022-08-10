@@ -86,7 +86,7 @@ jobs:
           docker push ${hana_image}
           docker push ${srv_image}
           helm install ${releaseName} ./chart --namespace ${releaseNamespace} --set global.imagePullSecret.name=${{secrets.IMAGEPULLSECRET}} --set global.domain=${{secrets.DOMAIN}}  --set srv.bindings.db.fromSecret=sflight-java-github-db --set srv.image.repository=${srv_image} --set hana_deployer.image.repository=${hana_image} --set hana_deployer.bindings.hana.fromSecret=sflight-java-github-db --set xsuaa.parameters.xsappname=sflight-java-e2e-test --set srv.resources.limits.cpu=2000m --set srv.resources.limits.memory=2G --set srv.resources.requests.cpu=1000m --set srv.resources.requests.memory=2G
-          xsuaaSecret=$(echo $(kubectl get secret ${releaseName}-${deploymentName}-${xsuaaKey} -o json))
+          xsuaaSecret=$(echo $(kubectl get secret ${releaseName}-${deploymentName}-auth -o json))
           clientIDEncoded=$(jq '.data.clientid' <<< "$xsuaaSecret")
           clientSecretEncoded=$(jq '.data.clientsecret' <<< "$xsuaaSecret")
           clientID=`echo -n $clientIDEncoded | base64 --decode`
