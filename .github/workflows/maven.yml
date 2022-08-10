@@ -110,6 +110,6 @@ jobs:
 
       - name: Helm Uninstall
         run: |
-          helm uninstall sflight --namespace ${releaseNamespace}
+          helm uninstall sflightjava --namespace ${releaseNamespace}
           
           
