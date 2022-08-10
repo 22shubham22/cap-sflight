@@ -42,7 +42,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Setting up environment
+      - name: Setting up environments
         run: |
           npm i -g @sap/cds-dk
           sudo add-apt-repository ppa:cncf-buildpacks/pack-cli
