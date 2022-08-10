@@ -107,3 +107,9 @@ jobs:
             exit 0
           else
             exit 1`
+
+      - name: Helm Uninstall
+        run: |
+          helm uninstall sflight --namespace ${releaseNamespace}
+          
+          
