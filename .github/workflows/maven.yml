@@ -95,11 +95,6 @@ jobs:
           accessToken=$(jq -r '.access_token' <<< "$response")
           echo getting status
           status=$(curl -H "Content-Type: application/json" -H "Authorization: Bearer ${accessToken}" ${appUrl}/${endpoint})
-          `if [ $status == 200 ]
-          then
-            exit 0
-          else
-            exit 1`
 
       - name: Helm Uninstall tests
         run: |
