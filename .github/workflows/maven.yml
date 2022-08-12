@@ -91,8 +91,10 @@ jobs:
           idPwdFormatted="$clientID:$clientSecret"
           idPwd=$(echo $idPwdFormatted | base64)
           echo getting token
+          echo ${url}
           response=$(curl -H "Authorization: Basic ${idPwd}" ${url}/oauth/token?grant_type=client_credentials&response_type=token)
           accessToken=$(jq -r '.access_token' <<< "$response")
+          echo ${accessToken}
           echo getting status
           status=$(curl -H "Content-Type: application/json" -H "Authorization: Bearer ${accessToken}" ${appUrl}/${endpoint})
 
