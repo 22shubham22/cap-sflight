@@ -36,7 +36,7 @@ jobs:
         npm run test:java -- --ci
 
   e2ekymatest:
-    name: End to End Kyma Tests
+    name: End to End Kyma Test
     # if: ${{ github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'deploy-kyma') }}  # run only if label is set
     runs-on: ubuntu-latest
 
