@@ -90,7 +90,7 @@ jobs:
           appUrl=https://${appPrefix}.${{secrets.DOMAIN}}
           idPwdFormatted="$clientID:$clientSecret"
           idPwd=$(echo $idPwdFormatted | base64)
-          response=$(curl --location --request GET ${url}/oauth/token?grant_type=client_credentials&response_type=token --header 'Authorization: Basic ${idPwd}')
+          response=$(curl --location --request GET ${url}/oauth/token?grant_type=client_credentials&response_type=token -H 'Authorization: Basic ${idPwd}')
           accessToken=$(jq -r '.access_token' <<< "$response")
           status=$(curl -H "Content-Type: application/json" -H "Authorization: Bearer ${accessToken}" ${appUrl}/${endpoint})
           `if [ $status == 200 ]
