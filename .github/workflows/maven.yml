@@ -99,7 +99,7 @@ jobs:
           else
             exit 1`
 
-      - name: Helm Uninstall
+      - name: Helm Uninstall test
         run: |
           helm uninstall sflightjava --namespace ${releaseNamespace}
           
