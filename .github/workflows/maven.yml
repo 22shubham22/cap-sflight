@@ -92,7 +92,7 @@ jobs:
           appUrl=https://${appPrefix}.${{secrets.DOMAIN}}
           idPwdFormatted="$clientID:$clientSecret"
           echo $idPwdFormatted
-          idPwd=$(echo $idPwdFormatted | base64)
+          idPwd=$(echo -n $idPwdFormatted | base64)
           echo ${idPwd}
           echo getting token
           echo ${url}
