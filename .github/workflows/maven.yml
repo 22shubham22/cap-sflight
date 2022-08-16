@@ -90,7 +90,9 @@ jobs:
           appPrefix=${releaseName}-${deploymentName}-${releaseNamespace}
           appUrl=https://${appPrefix}.${{secrets.DOMAIN}}
           auth=$(printf "%s:%s" "$clientID" "$clientSecret" | base64)
+          echo $auth
           auth=$(echo $auth | tr -d '\n')
+          echo $auth
           echo getting token
           finalUrl="${url}/oauth/token?grant_type=client_credentials&response_type=token"
           curl --location --request GET "${finalUrl}" --header "Authorization: Basic ${auth}"
