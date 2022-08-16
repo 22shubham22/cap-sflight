@@ -90,15 +90,12 @@ jobs:
           appPrefix=${releaseName}-${deploymentName}-${releaseNamespace}
           appUrl=https://${appPrefix}.${{secrets.DOMAIN}}
           auth=$(printf "%s:%s" "$clientID" "$clientSecret" | base64 -w0)
-          echo $auth
-          auth=$(echo $auth | tr -d '\n')
-          echo $auth
           echo getting token
           finalUrl="${url}/oauth/token?grant_type=client_credentials&response_type=token"
-          curl --location --request GET "${finalUrl}" --header "Authorization: Basic ${auth}"
           response=$(curl --location --request GET "${finalUrl}" --header "Authorization: Basic ${auth}")
           accessToken=$(jq -r '.access_token' <<< "$response")
           echo ${accessToken}
+          curl -H "Authorization: Bearer ${accessToken}" ${appUrl}/${endpoint}
           echo getting status
           status=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer ${accessToken}" ${appUrl}/${endpoint})
           echo ${status}
