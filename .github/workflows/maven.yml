@@ -72,6 +72,7 @@ jobs:
           releaseName=sflightjava
           deploymentName=srv
           releaseNamespace=e2e-kyma-test
+          endpoint=processor/Travel
           appPrefix=${releaseName}-${deploymentName}-${releaseNamespace}
           cds add helm --force
           cds add helm:hana_deployer
@@ -84,26 +85,28 @@ jobs:
           curl --max-time 10 --retry 5 --retry-delay 3 -f -LI -k https://${appPrefix}.${{secrets.DOMAIN}}
           xsuaaSecret=$(echo $(kubectl get secret ${releaseName}-${deploymentName}-auth -o json))
           clientID=$(jq -r '.data.clientid | @base64d' <<< "$xsuaaSecret")
-          echo $clientID
           clientSecret=$(jq -r '.data.clientsecret | @base64d' <<< "$xsuaaSecret")
-          echo $clientSecret
           url=$(jq -r '.data.url | @base64d' <<< "$xsuaaSecret")
           appPrefix=${releaseName}-${deploymentName}-${releaseNamespace}
           appUrl=https://${appPrefix}.${{secrets.DOMAIN}}
-          idPwdFormatted="$clientID:$clientSecret"
-          echo $idPwdFormatted
-          idPwd=$(echo -n $idPwdFormatted | base64)
-          echo ${idPwd}
+          auth=$(printf "%s:%s" "$clientID" "$clientSecret" | base64)
+          auth=$(echo $auth | tr -d '\n')
           echo getting token
           echo ${url}
           finalUrl="${url}/oauth/token?grant_type=client_credentials&response_type=token"
           echo ${finalUrl}
-          curl --location --request GET ${finalUrl} --header 'Authorization: Basic ${idPwd}'
+          response=$(curl --location --request GET "${finalUrl}" --header "Authorization: Basic ${auth}")
           accessToken=$(jq -r '.access_token' <<< "$response")
           echo ${accessToken}
           echo getting status
-          status=$(curl -H "Content-Type: application/json" -H "Authorization: Bearer ${accessToken}" ${appUrl}/${endpoint})
+          status=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer ${accessToken}" ${appUrl}/${endpoint})
           echo ${status}
+          if [ $status -ne "200" ]; 
+          then
+                  exit 0
+          else
+                  exit 1
+          fi
 
       - name: Helm Uninstall tests
         run: |
