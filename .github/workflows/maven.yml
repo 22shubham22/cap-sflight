@@ -89,7 +89,7 @@ jobs:
           url=$(jq -r '.data.url | @base64d' <<< "$xsuaaSecret")
           appPrefix=${releaseName}-${deploymentName}-${releaseNamespace}
           appUrl=https://${appPrefix}.${{secrets.DOMAIN}}
-          auth=$(printf "%s:%s" "$clientID" "$clientSecret" | base64)
+          auth=$(printf "%s:%s" "$clientID" "$clientSecret" | base64 -w0)
           echo $auth
           auth=$(echo $auth | tr -d '\n')
           echo $auth
