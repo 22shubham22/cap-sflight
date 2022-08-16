@@ -92,9 +92,8 @@ jobs:
           auth=$(printf "%s:%s" "$clientID" "$clientSecret" | base64)
           auth=$(echo $auth | tr -d '\n')
           echo getting token
-          echo ${url}
           finalUrl="${url}/oauth/token?grant_type=client_credentials&response_type=token"
-          echo ${finalUrl}
+          curl --location --request GET "${finalUrl}" --header "Authorization: Basic ${auth}"
           response=$(curl --location --request GET "${finalUrl}" --header "Authorization: Basic ${auth}")
           accessToken=$(jq -r '.access_token' <<< "$response")
           echo ${accessToken}
