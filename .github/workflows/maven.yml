@@ -101,9 +101,9 @@ jobs:
           status=$(curl -H "Content-Type: application/json" -H "Authorization: Bearer ${accessToken}" ${appUrl}/${endpoint})
           echo ${status}
 
-      # - name: Helm Uninstall tests
-      #   run: |
-      #     releaseNamespace=e2e-kyma-test
-      #     helm uninstall sflightjava --namespace ${releaseNamespace}
+      - name: Helm Uninstall tests
+        run: |
+          releaseNamespace=e2e-kyma-test
+          helm uninstall sflightjava --namespace ${releaseNamespace}
           
           
