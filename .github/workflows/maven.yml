@@ -94,6 +94,7 @@ jobs:
           echo ${url}
           finalUrl="${url}/oauth/token?grant_type=client_credentials&response_type=token"
           finalUrl=$(echo finalUrl | tr -d '\r')
+          echo ${finalUrl}
           response=$(curl -H "Authorization: Basic ${idPwd}" ${finalUrl})
           accessToken=$(jq -r '.access_token' <<< "$response")
           echo ${accessToken}
