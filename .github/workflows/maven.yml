@@ -79,7 +79,12 @@ jobs:
           cds add helm:xsuaa
           hana_image=cap-dev.docker.repositories.sap.ondemand.com/e2e/sflight-hana-deployer
           srv_image=cap-dev.docker.repositories.sap.ondemand.com/e2e/sflight-srv
+          pack build ${hana_image} --path db --buildpack gcr.io/paketo-buildpacks/nodejs --builder paketobuildpacks/builder:base
+          mvn package
+          pack build ${srv_image} --path srv/target/*-exec.jar --buildpack gcr.io/paketo-buildpacks/sap-machine --buildpack gcr.io/paketo-buildpacks/java --builder paketobuildpacks/builder:base --env SPRING_PROFILES_ACTIVE=cloud
           cp ./chart/xs-security.json xs-security.json.tmp && jq '. |= . + {"authorities":["$XSAPPNAME.admin"]}' xs-security.json.tmp >./chart/xs-security.json && rm xs-security.json.tmp
+          docker push ${hana_image}
+          docker push ${srv_image}
           helm install ${releaseName} ./chart --namespace ${releaseNamespace} --set global.imagePullSecret.name=${{secrets.IMAGEPULLSECRET}} --set global.domain=${{secrets.DOMAIN}}  --set srv.bindings.db.fromSecret=sflight-java-github-db --set srv.image.repository=${srv_image} --set hana_deployer.image.repository=${hana_image} --set hana_deployer.bindings.hana.fromSecret=sflight-java-github-db --set xsuaa.parameters.xsappname=sflightjava-e2eKyma-test --set srv.resources.limits.cpu=2000m --set srv.resources.limits.memory=2G --set srv.resources.requests.cpu=1000m --set srv.resources.requests.memory=2G
           kubectl rollout status deployment ${releaseName}-${deploymentName} --timeout=3m
           curl --max-time 10 --retry 5 --retry-delay 3 -f -LI -k https://${appPrefix}.${{secrets.DOMAIN}}
@@ -90,14 +95,10 @@ jobs:
           appPrefix=${releaseName}-${deploymentName}-${releaseNamespace}
           appUrl=https://${appPrefix}.${{secrets.DOMAIN}}
           auth=$(printf "%s:%s" "$clientID" "$clientSecret" | base64 -w0)
-          echo getting token
           finalUrl="${url}/oauth/token?grant_type=client_credentials&response_type=token"
           response=$(curl --location --request GET "${finalUrl}" --header "Authorization: Basic ${auth}")
           accessToken=$(jq -r '.access_token' <<< "$response")
-          echo ${accessToken}
-          echo getting status
           status=$(curl -I --location --request GET "${appUrl}/${endpoint}" --header "Authorization: Bearer ${accessToken}" -o /dev/null -w '%{http_code}\n' -s)
-          echo ${status}
           if [ $status -eq "200" ]; 
           then
                   exit 0
