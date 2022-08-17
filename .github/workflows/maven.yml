@@ -105,7 +105,7 @@ jobs:
                   exit 1
           fi
 
-      - name: Helm Uninstall test
+      - name: Helm Uninstall tests
         run: |
           releaseNamespace=e2e-kyma-test
           helm uninstall sflightjava --namespace ${releaseNamespace}
