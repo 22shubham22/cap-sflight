@@ -50,6 +50,7 @@ jobs:
 
   e2etest:
     name: E2E Node Tests
+    if: ${{ github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'deploy-kyma') }}  # run only if label is set
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
