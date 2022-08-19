@@ -38,7 +38,7 @@ jobs:
 
   deployment:
     name: Deploy
-    if: ${{ github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'deploy') }}  # run only if label is set
+#     if: ${{ github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'deploy') }}  # run only if label is set
     uses: ./.github/workflows/deploy-btp.yml
     with:
       cf-space: staging-${{ github.head_ref || github.ref_name }}
