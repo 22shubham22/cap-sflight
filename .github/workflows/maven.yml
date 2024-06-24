@@ -106,7 +106,7 @@ jobs:
                   exit 1
           fi
 
-      - name: Helm Uninstall test
+      - name: Helm Uninstall tests
         if: always()
         run: |
           releaseNamespace=e2e-kyma-test
